@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Precise powder measurements for microbiology media preparation. Calculate exact amounts for any volume." />
+  <meta name="theme-color" content="#1070ba" />
+
+  <title>MediaCalc — Lab Media Calculator</title>
+
+  <!-- PWA manifest -->
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+
+  <!-- Tabler icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- Background image layer with hidden easter egg -->
+<div class="bg-layer" role="presentation" aria-hidden="true"></div>
+
+<div class="app">
+
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="logo" aria-hidden="true">
+      <i class="ti ti-flask-2"></i>
+    </div>
+    <div class="header-text">
+      <h1>MediaCalc</h1>
+      <p>Microbiology media powder calculator</p>
+    </div>
+    <button class="theme-btn" onclick="toggleTheme()" aria-label="Toggle light/dark mode" title="Toggle theme">
+      <i class="ti ti-moon" id="theme-icon" aria-hidden="true"></i>
+    </button>
+  </header>
+
+  <!-- Main card -->
+  <main class="main-card" role="main">
+
+    <!-- Tab navigation -->
+    <nav class="tabs" role="tablist" aria-label="App sections">
+      <button class="tab-btn active" id="tab-calc"
+        role="tab" aria-selected="true" aria-controls="page-calc"
+        onclick="showTab('calc')">
+        <i class="ti ti-calculator" aria-hidden="true"></i> Calculate
+      </button>
+      <button class="tab-btn" id="tab-recents"
+        role="tab" aria-selected="false" aria-controls="page-recents"
+        onclick="showTab('recents')">
+        <i class="ti ti-history" aria-hidden="true"></i> Recent
+      </button>
+      <button class="tab-btn" id="tab-favs"
+        role="tab" aria-selected="false" aria-controls="page-favs"
+        onclick="showTab('favs')">
+        <i class="ti ti-star" aria-hidden="true"></i> Favorites
+      </button>
+    </nav>
+
+    <!-- ── CALCULATOR PAGE ── -->
+    <section class="page active" id="page-calc" role="tabpanel" aria-labelledby="tab-calc">
+
+      <div class="label">Select medium</div>
+
+      <div class="filter-row" role="group" aria-label="Filter by type">
+        <button class="filter-chip active" onclick="filterMedia('all', this)">All</button>
+        <button class="filter-chip" onclick="filterMedia('Solid', this)">Solid (agar)</button>
+        <button class="filter-chip" onclick="filterMedia('Broth', this)">Broth</button>
+      </div>
+
+      <div class="search-wrap">
+        <i class="ti ti-search si" aria-hidden="true"></i>
+        <input
+          type="search"
+          id="media-search"
+          placeholder="Search media…"
+          autocomplete="off"
+          oninput="searchMedia(this.value)"
+          aria-label="Search media"
+        />
+      </div>
+
+      <div class="media-grid" id="media-grid" role="listbox" aria-label="Available media"></div>
+
+      <div class="label">Volume to prepare</div>
+
+      <div class="vol-row" role="group" aria-label="Volume presets">
+        <button class="vol-preset" onclick="setVol(25, this)">25 mL</button>
+        <button class="vol-preset" onclick="setVol(50, this)">50 mL</button>
+        <button class="vol-preset" onclick="setVol(100, this)">100 mL</button>
+        <button class="vol-preset" onclick="setVol(200, this)">200 mL</button>
+        <button class="vol-preset" onclick="setVol(500, this)">500 mL</button>
+        <div class="vol-custom">
+          <input
+            type="number"
+            id="vol-custom"
+            placeholder="Custom"
+            min="1" max="9999" step="any"
+            oninput="customVol(this.value)"
+            aria-label="Custom volume in millilitres"
+          />
+          <span aria-hidden="true">mL</span>
+        </div>
+      </div>
+
+      <button class="calc-btn" id="calc-btn" onclick="calculate()" disabled>
+        <i class="ti ti-calculator" aria-hidden="true"></i>
+        Calculate powder amount
+      </button>
+
+      <!-- Result card -->
+      <div class="result-card" id="result-card" aria-live="polite">
+        <div class="result-top">
+          <div>
+            <div class="result-dose-label">Powder needed</div>
+            <div class="result-dose-row">
+              <span id="res-num" aria-label="Powder amount in grams">—</span>
+              <span class="res-unit" aria-hidden="true">g</span>
+            </div>
+            <div class="result-meta">
+              <span><strong id="res-name"></strong></span>
+              <span>Volume: <strong id="res-vol"></strong> &nbsp;·&nbsp; Ratio: <strong id="res-rate"></strong></span>
+            </div>
+          </div>
+          <button class="fav-btn" id="fav-btn" onclick="toggleFav()" aria-label="Add to favorites">
+            <i class="ti ti-star" id="fav-icon" aria-hidden="true"></i>
+          </button>
+        </div>
+
+        <div id="autoclave-badge" class="autoclave-badge autoclave-yes" aria-live="polite"></div>
+
+        <ul class="prep-steps" id="prep-steps" aria-label="Preparation steps"></ul>
+
+        <div class="result-warn hidden" id="result-warn" role="alert"></div>
+      </div>
+
+    </section>
+
+    <!-- ── RECENTS PAGE ── -->
+    <section class="page" id="page-recents" role="tabpanel" aria-labelledby="tab-recents">
+      <div class="label">Recent calculations</div>
+      <div id="recents-list"></div>
+    </section>
+
+    <!-- ── FAVORITES PAGE ── -->
+    <section class="page" id="page-favs" role="tabpanel" aria-labelledby="tab-favs">
+      <div class="label">Favorites</div>
+      <div id="favs-list"></div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p>Always verify against your bottle label &nbsp;·&nbsp; Measurements are calculated, not guaranteed</p>
+  </footer>
+
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

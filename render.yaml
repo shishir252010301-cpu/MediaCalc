@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: mediacalc
+    env: static
+    buildCommand: ""
+    staticPublishPath: .
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=3600
+      - path: /sw.js
+        name: Cache-Control
+        value: no-cache
+      - path: /sw.js
+        name: Service-Worker-Allowed
+        value: /
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
