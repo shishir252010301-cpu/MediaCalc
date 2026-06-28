@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mediacalc-v2';
+const CACHE_NAME = 'mediacalc-v3';
 const ASSETS = [
   '/',
   '/index.html',
