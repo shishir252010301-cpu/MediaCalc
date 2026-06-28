@@ -92,7 +92,7 @@ body {
 /* ── Background ────────────────────────────────────────────────────────── */
 .bg-layer {
   position: fixed; inset: 0; z-index: 0;
-  background-image: url('https://chatgpt.com/s/m_6a400463280c819197af9e8f74303923');
+  background-image: url('bg.png');
   background-size: cover;
   background-position: center;
   filter: brightness(0.55) saturate(0.9);
@@ -533,4 +533,132 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .result-card { animation: none; }
   * { transition: none !important; }
+}
+
+/* ── Custom media page ──────────────────────────────────────────────────── */
+.custom-hint {
+  font-size: 12px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.6;
+}
+
+.add-custom-btn {
+  display: flex; align-items: center; gap: 7px;
+  padding: 9px 14px;
+  border-radius: var(--radius);
+  border: 0.5px dashed var(--border-accent);
+  background: var(--bg-chip-sel);
+  color: var(--text-accent);
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; width: 100%;
+  justify-content: center;
+  transition: all 0.15s; margin-bottom: 14px;
+}
+.add-custom-btn:hover { background: var(--bg-result); border-style: solid; }
+
+/* Form */
+.custom-form {
+  background: var(--bg-result);
+  border: 0.5px solid var(--border-accent);
+  border-radius: var(--radius-lg);
+  padding: 1.1rem;
+  margin-bottom: 14px;
+  animation: slideIn 0.18s ease;
+}
+.custom-form.hidden { display: none; }
+
+.custom-form-title {
+  font-size: 13px; font-weight: 600;
+  color: var(--text-accent); margin-bottom: 12px;
+}
+
+.form-row { margin-bottom: 10px; }
+
+.form-row-2col {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;
+}
+
+.form-label {
+  display: block; font-size: 11px; font-weight: 500;
+  color: var(--text-muted); margin-bottom: 4px;
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+.form-optional { font-weight: 400; text-transform: none; letter-spacing: 0; }
+
+.form-input {
+  width: 100%; padding: 7px 9px;
+  border-radius: var(--radius-sm);
+  border: 0.5px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 13px; font-family: var(--font);
+  outline: none; transition: border-color 0.15s;
+  appearance: none; -webkit-appearance: none;
+}
+.form-input:focus { border-color: var(--border-accent); }
+.form-input::placeholder { color: var(--text-muted); }
+select.form-input { cursor: pointer; }
+
+.custom-error {
+  font-size: 11px; color: #dc2626; min-height: 16px; margin-bottom: 8px;
+}
+
+.form-actions {
+  display: flex; gap: 8px; justify-content: flex-end;
+}
+
+.form-cancel-btn {
+  padding: 7px 14px; border-radius: var(--radius-sm);
+  border: 0.5px solid var(--border); background: var(--bg-chip);
+  color: var(--text-secondary); font-size: 13px; cursor: pointer;
+  transition: all 0.1s;
+}
+.form-cancel-btn:hover { border-color: var(--border-strong); color: var(--text-primary); }
+
+.form-save-btn {
+  padding: 7px 16px; border-radius: var(--radius-sm);
+  border: none; background: var(--accent);
+  color: #fff; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all 0.15s;
+}
+.form-save-btn:hover { opacity: 0.88; }
+
+/* Saved custom items list */
+.custom-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px; border-radius: var(--radius-sm);
+  border: 0.5px solid var(--border);
+  background: var(--bg-chip);
+  margin-bottom: 6px;
+}
+.custom-item-icon {
+  width: 30px; height: 30px; border-radius: 8px;
+  background: var(--bg-chip-sel);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.custom-item-icon i { color: var(--text-accent); font-size: 15px; }
+.custom-item-info { flex: 1; min-width: 0; }
+.custom-item-name { font-size: 12px; font-weight: 500; display: block; }
+.custom-item-sub  { font-size: 10px; color: var(--text-muted); }
+
+.custom-delete-btn {
+  width: 28px; height: 28px; border-radius: 7px;
+  border: 0.5px solid var(--border);
+  background: none; color: var(--text-muted);
+  cursor: pointer; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.1s; flex-shrink: 0;
+}
+.custom-delete-btn:hover {
+  background: rgba(220,38,38,0.1);
+  border-color: rgba(220,38,38,0.3);
+  color: #dc2626;
+}
+
+/* Custom tag on media chips */
+.chip-custom {
+  font-size: 9px; font-weight: 600;
+  background: var(--bg-chip-sel); color: var(--text-accent);
+  border: 0.5px solid var(--border-accent);
+  border-radius: 4px; padding: 1px 4px;
+  margin-left: 4px; vertical-align: middle;
+  text-transform: uppercase; letter-spacing: 0.04em;
 }
