@@ -6,6 +6,7 @@ const ASSETS = [
   '/app.js',
   '/data.js',
   '/manifest.json',
+  '/bg.png',
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap',
   'https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css',
   'https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/fonts/tabler-icons.woff2'
@@ -32,14 +33,6 @@ self.addEventListener('activate', event => {
 // Fetch — cache-first for assets, network-first for images
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
-
-  // Never cache unsplash background (always fresh, but ok to fail offline)
-  if (url.hostname === 'images.unsplash.com') {
-    event.respondWith(
-      fetch(event.request).catch(() => new Response('', { status: 200 }))
-    );
-    return;
-  }
 
   // Cache-first strategy
   event.respondWith(
