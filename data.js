@@ -1,4 +1,5 @@
 const MEDIA_DB = [
+  // ── From lab bottle labels ──────────────────────────────────────────────
   {
     name: "Nutrient Agar",
     type: "Solid",
@@ -8,7 +9,7 @@ const MEDIA_DB = [
     steps: [
       "Weigh {dose} g of Nutrient Agar powder.",
       "Add to {vol} mL of distilled water. Stir to suspend.",
-      "Heat while stirring until fully dissolved and brought to a boil.",
+      "Heat while stirring until fully dissolved.",
       "Autoclave at 121 °C for 15–20 min.",
       "Cool to ~50 °C before pouring plates."
     ]
@@ -16,35 +17,35 @@ const MEDIA_DB = [
   {
     name: "Nutrient Broth",
     type: "Broth",
-    gPer1000: 8,
+    gPer1000: 13,
     autoclave: "yes",
     warn: null,
     steps: [
       "Weigh {dose} g of Nutrient Broth powder.",
-      "Dissolve in {vol} mL of distilled water.",
+      "Dissolve in {vol} mL of distilled water with heating.",
       "Autoclave at 121 °C for 15–20 min."
     ]
   },
   {
     name: "MacConkey Agar",
     type: "Solid",
-    gPer1000: 50.5,
+    gPer1000: 51.53,
     autoclave: "yes",
-    warn: "Do not overheat — indicator dyes (neutral red, crystal violet) degrade at excessive temperatures and can produce false results.",
+    warn: "Do not overheat — indicator dyes degrade at excessive temperatures and can give false results.",
     steps: [
       "Weigh {dose} g of MacConkey Agar powder.",
       "Suspend in {vol} mL of distilled water.",
       "Heat to dissolve — do not overheat.",
-      "Autoclave at 121 °C for 15–20 min or use steam sterilization per manufacturer.",
+      "Autoclave at 121 °C for 15–20 min.",
       "Cool to ~50 °C before pouring plates."
     ]
   },
   {
     name: "EMB Agar",
     type: "Solid",
-    gPer1000: 36,
+    gPer1000: 35.56,
     autoclave: "yes",
-    warn: "If adding heat-sensitive supplements (e.g. antibiotics), wait until medium cools to 45–50 °C before adding.",
+    warn: "If adding heat-sensitive supplements, wait until medium cools to 45–50 °C before adding.",
     steps: [
       "Weigh {dose} g of EMB Agar powder.",
       "Suspend in {vol} mL of distilled water.",
@@ -56,9 +57,9 @@ const MEDIA_DB = [
   {
     name: "XLD Agar",
     type: "Solid",
-    gPer1000: 63,
+    gPer1000: 56.68,
     autoclave: "heat-only",
-    warn: "Do NOT autoclave — heat-sensitive dyes and selective agents will be destroyed. Heat only to dissolve.",
+    warn: "Do NOT autoclave — heat-sensitive dyes and selective agents will be destroyed.",
     steps: [
       "Weigh {dose} g of XLD Agar powder.",
       "Suspend in {vol} mL of distilled water.",
@@ -83,9 +84,9 @@ const MEDIA_DB = [
   {
     name: "MRS Agar",
     type: "Solid",
-    gPer1000: 55,
+    gPer1000: 67.15,
     autoclave: "yes",
-    warn: "Cool to 45–50 °C before adding heat-sensitive supplements such as antibiotics or specific carbon sources.",
+    warn: "Cool to 45–50 °C before adding heat-sensitive supplements such as antibiotics.",
     steps: [
       "Weigh {dose} g of MRS Agar powder.",
       "Suspend in {vol} mL of distilled water.",
@@ -97,7 +98,7 @@ const MEDIA_DB = [
   {
     name: "LB Agar",
     type: "Solid",
-    gPer1000: 25,
+    gPer1000: 40,
     autoclave: "yes",
     warn: null,
     steps: [
@@ -110,90 +111,20 @@ const MEDIA_DB = [
   {
     name: "LB Broth",
     type: "Broth",
-    gPer1000: 10,
+    gPer1000: 25,
     autoclave: "yes",
     warn: null,
     steps: [
       "Weigh {dose} g of LB Broth powder.",
-      "Dissolve in {vol} mL of distilled water.",
+      "Dissolve in {vol} mL of distilled water with heating.",
       "Autoclave at 121 °C for 15–20 min.",
       "For screw-cap tubes, tighten caps only after cooling."
     ]
   },
   {
-    name: "VRBA",
-    type: "Solid",
-    gPer1000: 41.5,
-    autoclave: "heat-only",
-    warn: "Do NOT autoclave — selective agents will be inactivated. Heat only to dissolve, then pour immediately.",
-    steps: [
-      "Weigh {dose} g of VRBA powder.",
-      "Suspend in {vol} mL of distilled water.",
-      "Heat to boiling to dissolve completely.",
-      "Do NOT autoclave.",
-      "Cool to ~50 °C and pour plates immediately."
-    ]
-  },
-  {
-    name: "VRBG Agar",
-    type: "Solid",
-    gPer1000: 42,
-    autoclave: "heat-only",
-    warn: "Do NOT autoclave — selective agents will be inactivated. Pour immediately after cooling.",
-    steps: [
-      "Weigh {dose} g of VRBG Agar powder.",
-      "Suspend in {vol} mL of distilled water.",
-      "Heat to boiling to dissolve completely.",
-      "Do NOT autoclave.",
-      "Cool to ~50 °C and pour plates immediately."
-    ]
-  },
-  {
-    name: "EEB",
-    type: "Broth",
-    gPer1000: 35.5,
-    autoclave: "heat-only",
-    warn: "Do NOT autoclave — heat only to dissolve. Selective enrichment components are heat-sensitive.",
-    steps: [
-      "Weigh {dose} g of EEB powder.",
-      "Dissolve in {vol} mL of distilled water.",
-      "Heat gently to dissolve — do not boil excessively.",
-      "Do NOT autoclave.",
-      "Distribute into appropriate containers aseptically if needed."
-    ]
-  },
-  {
-    name: "Brilliant Green Agar",
-    type: "Solid",
-    gPer1000: 40.7,
-    autoclave: "heat-only",
-    warn: "Do NOT autoclave — the dye Brilliant Green is destroyed by autoclaving. Pour immediately.",
-    steps: [
-      "Weigh {dose} g of Brilliant Green Agar powder.",
-      "Suspend in {vol} mL of distilled water.",
-      "Heat to boiling to dissolve.",
-      "Do NOT autoclave.",
-      "Cool to ~50 °C and pour plates immediately."
-    ]
-  },
-  {
-    name: "Bismuth Sulfite Agar",
-    type: "Solid",
-    gPer1000: 52,
-    autoclave: "heat-only",
-    warn: "Do NOT autoclave — bismuth sulfite indicator is destroyed by autoclaving.",
-    steps: [
-      "Weigh {dose} g of Bismuth Sulfite Agar powder.",
-      "Suspend in {vol} mL of distilled water.",
-      "Heat to boiling with frequent agitation.",
-      "Do NOT autoclave.",
-      "Cool to ~50 °C and pour plates immediately."
-    ]
-  },
-  {
     name: "SS Agar",
     type: "Solid",
-    gPer1000: 60,
+    gPer1000: 63.02,
     autoclave: "heat-only",
     warn: "Do NOT autoclave — selective inhibitors are destroyed by autoclaving.",
     steps: [
@@ -205,23 +136,9 @@ const MEDIA_DB = [
     ]
   },
   {
-    name: "DCA",
-    type: "Solid",
-    gPer1000: 65,
-    autoclave: "heat-only",
-    warn: "Do NOT autoclave — selective agents are heat-labile beyond boiling point.",
-    steps: [
-      "Weigh {dose} g of DCA powder.",
-      "Suspend in {vol} mL of distilled water.",
-      "Heat to boiling to dissolve.",
-      "Do NOT autoclave.",
-      "Cool to ~50 °C and pour plates immediately."
-    ]
-  },
-  {
     name: "TCBS Agar",
     type: "Solid",
-    gPer1000: 88,
+    gPer1000: 89.08,
     autoclave: "heat-only",
     warn: "Do NOT autoclave — thiosulfate, citrate, bile salts and indicator dyes are destroyed by autoclaving.",
     steps: [
@@ -233,129 +150,85 @@ const MEDIA_DB = [
     ]
   },
   {
-    name: "CLED Agar",
+    name: "Brilliant Green Agar",
     type: "Solid",
-    gPer1000: 36,
-    autoclave: "heat-only",
-    warn: "Do NOT autoclave — cystine and indicator components are heat-labile.",
+    gPer1000: 29.05,
+    autoclave: "yes",
+    warn: null,
     steps: [
-      "Weigh {dose} g of CLED Agar powder.",
+      "Weigh {dose} g of Brilliant Green Agar powder.",
       "Suspend in {vol} mL of distilled water.",
-      "Heat to boiling to dissolve.",
-      "Do NOT autoclave.",
-      "Cool to ~50 °C and pour plates immediately."
+      "Heat to dissolve.",
+      "Autoclave at 121 °C for 15–20 min.",
+      "Cool to ~50 °C and pour plates."
     ]
   },
   {
-    name: "Wilson and Blair Medium",
-    type: "Solid",
-    gPer1000: 58,
-    autoclave: "heat-only",
-    warn: "Do NOT autoclave — bismuth and sulfite components are destroyed by autoclaving.",
-    steps: [
-      "Weigh {dose} g of Wilson and Blair Medium powder.",
-      "Suspend in {vol} mL of distilled water.",
-      "Heat to boiling to dissolve.",
-      "Do NOT autoclave.",
-      "Cool to ~50 °C and pour plates immediately."
-    ]
-  },
-  {
-    name: "Kligler Iron Agar",
-    type: "Solid",
-    gPer1000: 55,
-    autoclave: "heat-only",
-    warn: "Do NOT autoclave — ferric salts and indicator components are altered by autoclaving.",
-    steps: [
-      "Weigh {dose} g of Kligler Iron Agar powder.",
-      "Suspend in {vol} mL of distilled water.",
-      "Heat to boiling to dissolve.",
-      "Do NOT autoclave.",
-      "Distribute into tubes and allow to set as slants."
-    ]
-  },
-  {
-    name: "TSI Agar",
-    type: "Solid",
-    gPer1000: 65,
-    autoclave: "heat-only",
-    warn: "Do NOT autoclave — triple sugar and iron indicator components are heat-sensitive.",
-    steps: [
-      "Weigh {dose} g of TSI Agar powder.",
-      "Suspend in {vol} mL of distilled water.",
-      "Heat to boiling to dissolve completely.",
-      "Do NOT autoclave.",
-      "Distribute into tubes and allow to set as slants."
-    ]
-  },
-  {
-    name: "Selenite F Broth",
+    name: "Buffered Peptone Water",
     type: "Broth",
-    gPer1000: 23,
-    autoclave: "heat-only",
-    warn: "Do NOT autoclave — sodium selenite is toxic and heat-labile. Handle with care.",
+    gPer1000: 20.07,
+    autoclave: "yes",
+    warn: null,
     steps: [
-      "Weigh {dose} g of Selenite F Broth powder.",
-      "Dissolve in {vol} mL of distilled water.",
-      "Heat gently to dissolve — do not boil.",
-      "Do NOT autoclave.",
-      "Dispense into tubes while still warm."
+      "Weigh {dose} g of Buffered Peptone Water powder.",
+      "Dissolve in {vol} mL of distilled water with heating.",
+      "Autoclave at 121 °C for 15–20 min."
     ]
   },
   {
-    name: "Tetrathionate Broth",
-    type: "Broth",
-    gPer1000: 25,
-    autoclave: "heat-only",
-    warn: "Do NOT autoclave — tetrathionate is decomposed by autoclaving.",
-    steps: [
-      "Weigh {dose} g of Tetrathionate Broth powder.",
-      "Dissolve in {vol} mL of distilled water.",
-      "Heat gently to dissolve.",
-      "Do NOT autoclave.",
-      "Dispense into appropriate containers."
-    ]
-  },
-  {
-    name: "Rappaport-Vassiliadis Broth",
-    type: "Broth",
-    gPer1000: 26,
-    autoclave: "heat-only",
-    warn: "Do NOT autoclave — malachite green and magnesium chloride components are altered by autoclaving.",
-    steps: [
-      "Weigh {dose} g of Rappaport-Vassiliadis Broth powder.",
-      "Dissolve in {vol} mL of distilled water.",
-      "Heat gently to dissolve.",
-      "Do NOT autoclave.",
-      "Dispense into appropriate containers."
-    ]
-  },
-  {
-    name: "Tinsdale Medium",
+    name: "Starch M Protein Agar",
     type: "Solid",
-    gPer1000: 52,
-    autoclave: "heat-only",
-    warn: "Do NOT autoclave — tellurite and cystine components are destroyed by autoclaving.",
+    gPer1000: 63,
+    autoclave: "yes",
+    warn: null,
     steps: [
-      "Weigh {dose} g of Tinsdale Medium powder.",
+      "Weigh {dose} g of Starch M Protein Agar powder.",
       "Suspend in {vol} mL of distilled water.",
       "Heat to boiling to dissolve.",
-      "Do NOT autoclave.",
-      "Cool to ~50 °C and pour plates immediately."
+      "Autoclave at 121 °C for 15–20 min.",
+      "Cool to ~50 °C before pouring plates."
     ]
   },
   {
-    name: "Tellurite Agar",
+    name: "Mannitol Salt Agar",
     type: "Solid",
-    gPer1000: 46,
-    autoclave: "heat-only",
-    warn: "Do NOT autoclave — tellurite compounds are destroyed by autoclaving.",
+    gPer1000: 111.02,
+    autoclave: "yes",
+    warn: "High powder amount — ensure full dissolution before autoclaving.",
     steps: [
-      "Weigh {dose} g of Tellurite Agar powder.",
+      "Weigh {dose} g of Mannitol Salt Agar powder.",
       "Suspend in {vol} mL of distilled water.",
-      "Heat to boiling to dissolve.",
-      "Do NOT autoclave.",
-      "Cool to ~50 °C and pour plates immediately."
+      "Heat to dissolve completely — stir well, high salt content.",
+      "Autoclave at 121 °C for 15–20 min.",
+      "Cool to ~50 °C before pouring plates."
+    ]
+  },
+  {
+    name: "Plate Count Agar",
+    type: "Solid",
+    gPer1000: 23.5,
+    autoclave: "yes",
+    warn: null,
+    steps: [
+      "Weigh {dose} g of Plate Count Agar powder.",
+      "Dissolve in {vol} mL of distilled water by heating.",
+      "Autoclave at 121 °C for 15–20 min.",
+      "Cool to ~50 °C before pouring plates."
     ]
   }
 ];
+
+// ── Custom media (persisted in localStorage) ────────────────────────────
+function loadCustomMedia() {
+  try {
+    return JSON.parse(localStorage.getItem('mc_custom') || '[]');
+  } catch { return []; }
+}
+
+function saveCustomMedia(list) {
+  localStorage.setItem('mc_custom', JSON.stringify(list));
+}
+
+function getAllMedia() {
+  return [...MEDIA_DB, ...loadCustomMedia()];
+}
