@@ -50,23 +50,43 @@ function renderGrid() {
     grid.innerHTML = '<p class="empty-hint">No media match your search.</p>';
     return;
   }
-  grid.innerHTML = list.map(m => {
-    const sel      = selectedMedia?.name === m.name ? 'selected' : '';
+
+  // Build buttons and attach click listeners after inserting into DOM
+  grid.innerHTML = list.map((m, i) => {
+    const sel      = selectedMedia && selectedMedia.name === m.name ? 'selected' : '';
     const isCustom = !MEDIA_DB.find(x => x.name === m.name);
     const icon     = m.autoclave === 'heat-only' ? 'ti-flame'
                    : m.autoclave === 'yes'       ? 'ti-virus'
                    :                               'ti-leaf';
-    const customTag = isCustom ? '<span class="chip-custom">custom</span>' : '';
-    return `<button class="media-chip ${sel}" onclick="selectMedia(${JSON.stringify(m.name)})">
+    const customTag = isCustom
+      ? '<span class="chip-custom">custom</span>'
+      : '';
+    return `<button class="media-chip ${sel}" data-idx="${i}">
       <i class="ti ${icon} chip-icon" aria-hidden="true"></i>
-      <span class="chip-name">${m.name}${customTag}</span>
-      <span class="chip-type">${m.type}</span>
+      <span class="chip-name">${escHtml(m.name)}${customTag}</span>
+      <span class="chip-type">${escHtml(m.type)}</span>
     </button>`;
   }).join('');
+
+  // Attach click handlers using the index to look up the media object
+  grid.querySelectorAll('.media-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.idx, 10);
+      selectMedia(list[idx]);
+    });
+  });
 }
 
-function selectMedia(name) {
-  selectedMedia = getAllMedia().find(m => m.name === name) || null;
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function selectMedia(mediaObj) {
+  selectedMedia = mediaObj;
   hideResult();
   renderGrid();
   updateCalcBtn();
@@ -122,20 +142,22 @@ function calculate() {
   document.getElementById('res-vol').textContent  = selectedVol + ' mL';
   document.getElementById('res-rate').textContent = selectedMedia.gPer1000 + ' g / 1000 mL';
 
-  const stepsHtml = (selectedMedia.steps || [
-    `Weigh {dose} g of ${selectedMedia.name} powder.`,
-    `Dissolve in {vol} mL of distilled water.`,
+  const defaultSteps = [
+    'Weigh ' + dose + ' g of ' + selectedMedia.name + ' powder.',
+    'Dissolve in ' + selectedVol + ' mL of distilled water.',
     selectedMedia.autoclave === 'yes'
       ? 'Autoclave at 121 °C for 15–20 min.'
       : selectedMedia.autoclave === 'heat-only'
         ? 'Heat to dissolve. Do NOT autoclave.'
         : 'Use as prepared — no heat or autoclave required.'
-  ]).map((s, i) => {
+  ];
+
+  const stepsHtml = (selectedMedia.steps || defaultSteps).map((s, i) => {
     const txt = s.replace(/\{dose\}/g, dose).replace(/\{vol\}/g, selectedVol);
-    return `<li class="prep-step">
-      <span class="step-num">${i + 1}</span>
-      <span class="step-text">${txt}</span>
-    </li>`;
+    return '<li class="prep-step">'
+      + '<span class="step-num">' + (i + 1) + '</span>'
+      + '<span class="step-text">' + txt + '</span>'
+      + '</li>';
   }).join('');
   document.getElementById('prep-steps').innerHTML = stepsHtml;
 
@@ -153,7 +175,7 @@ function calculate() {
 
   const warnEl = document.getElementById('result-warn');
   if (selectedMedia.warn) {
-    warnEl.innerHTML = `<i class="ti ti-alert-triangle" aria-hidden="true"></i> ${selectedMedia.warn}`;
+    warnEl.innerHTML = '<i class="ti ti-alert-triangle" aria-hidden="true"></i> ' + selectedMedia.warn;
     warnEl.classList.remove('hidden');
   } else {
     warnEl.classList.add('hidden');
@@ -163,9 +185,12 @@ function calculate() {
   document.getElementById('result-card').classList.add('visible');
 
   const entry = {
-    name: selectedMedia.name, type: selectedMedia.type,
+    name: selectedMedia.name,
+    type: selectedMedia.type,
     autoclave: selectedMedia.autoclave,
-    vol: selectedVol, dose, ts: Date.now()
+    vol: selectedVol,
+    dose: dose,
+    ts: Date.now()
   };
   recents = [entry, ...recents.filter(r => !(r.name === entry.name && r.vol === entry.vol))].slice(0, 30);
   localStorage.setItem('mc_recents', JSON.stringify(recents));
@@ -175,8 +200,8 @@ function calculate() {
 function syncFavBtn() {
   if (!selectedMedia) return;
   const active = favs.includes(selectedMedia.name);
-  const btn    = document.getElementById('fav-btn');
-  const icon   = document.getElementById('fav-icon');
+  const btn  = document.getElementById('fav-btn');
+  const icon = document.getElementById('fav-icon');
   btn.classList.toggle('active', active);
   icon.className = active ? 'ti ti-star-filled' : 'ti ti-star';
   btn.setAttribute('aria-label', active ? 'Remove from favorites' : 'Add to favorites');
@@ -194,57 +219,48 @@ function toggleFav() {
 function renderFavs() {
   const el = document.getElementById('favs-list');
   if (!favs.length) {
-    el.innerHTML = `<div class="empty-state">
-      <i class="ti ti-star" aria-hidden="true"></i>
-      <p>No favorites yet</p><small>Star a result to save it here.</small>
-    </div>`;
+    el.innerHTML = '<div class="empty-state"><i class="ti ti-star" aria-hidden="true"></i><p>No favorites yet</p><small>Star a result to save it here.</small></div>';
     return;
   }
-  el.innerHTML = favs.map(name => {
+  el.innerHTML = '';
+  favs.forEach(name => {
     const m = getAllMedia().find(x => x.name === name);
-    if (!m) return '';
+    if (!m) return;
     const icon = m.autoclave === 'heat-only' ? 'ti-flame' : m.autoclave === 'yes' ? 'ti-virus' : 'ti-leaf';
-    return `<button class="fav-item" onclick="loadFav(${JSON.stringify(name)})">
-      <i class="ti ${icon}" aria-hidden="true"></i>
-      <div class="fav-info">
-        <span class="fav-name">${name}</span>
-        <span class="fav-sub">${m.type} · ${m.gPer1000} g / 1000 mL</span>
-      </div>
-      <i class="ti ti-arrow-right" aria-hidden="true"></i>
-    </button>`;
-  }).join('');
+    const btn = document.createElement('button');
+    btn.className = 'fav-item';
+    btn.innerHTML = '<i class="ti ' + icon + '" aria-hidden="true"></i>'
+      + '<div class="fav-info"><span class="fav-name">' + escHtml(name) + '</span>'
+      + '<span class="fav-sub">' + m.type + ' · ' + m.gPer1000 + ' g / 1000 mL</span></div>'
+      + '<i class="ti ti-arrow-right" aria-hidden="true"></i>';
+    btn.addEventListener('click', () => loadFav(m));
+    el.appendChild(btn);
+  });
 }
 
-function loadFav(name) {
+function loadFav(mediaObj) {
   showTab('calc');
-  selectMedia(name);
+  selectMedia(mediaObj);
 }
 
 // ── Recents ────────────────────────────────────────────────────────────────
 function renderRecents() {
   const el = document.getElementById('recents-list');
   if (!recents.length) {
-    el.innerHTML = `<div class="empty-state">
-      <i class="ti ti-clock" aria-hidden="true"></i>
-      <p>No recent calculations</p><small>Your history will appear here.</small>
-    </div>`;
+    el.innerHTML = '<div class="empty-state"><i class="ti ti-clock" aria-hidden="true"></i><p>No recent calculations</p><small>Your history will appear here.</small></div>';
     return;
   }
   el.innerHTML = recents.map(r => {
     const d    = new Date(r.ts);
     const when = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
     const icon = r.autoclave === 'heat-only' ? 'ti-flame' : r.autoclave === 'yes' ? 'ti-virus' : 'ti-leaf';
-    return `<div class="recent-item">
-      <div class="recent-icon"><i class="ti ${icon}" aria-hidden="true"></i></div>
-      <div class="recent-info">
-        <span class="recent-name">${r.name}</span>
-        <span class="recent-sub">${r.type} · ${when}</span>
-      </div>
-      <div class="recent-right">
-        <span class="recent-dose">${r.dose} g</span>
-        <span class="recent-vol">${r.vol} mL</span>
-      </div>
-    </div>`;
+    return '<div class="recent-item">'
+      + '<div class="recent-icon"><i class="ti ' + icon + '" aria-hidden="true"></i></div>'
+      + '<div class="recent-info"><span class="recent-name">' + escHtml(r.name) + '</span>'
+      + '<span class="recent-sub">' + r.type + ' · ' + when + '</span></div>'
+      + '<div class="recent-right"><span class="recent-dose">' + r.dose + ' g</span>'
+      + '<span class="recent-vol">' + r.vol + ' mL</span></div>'
+      + '</div>';
   }).join('');
 }
 
@@ -261,11 +277,11 @@ function hideCustomForm() {
 }
 
 function clearCustomForm() {
-  document.getElementById('custom-name').value    = '';
-  document.getElementById('custom-gpL').value     = '';
-  document.getElementById('custom-type').value    = 'Solid';
+  document.getElementById('custom-name').value      = '';
+  document.getElementById('custom-gpL').value       = '';
+  document.getElementById('custom-type').value      = 'Solid';
   document.getElementById('custom-autoclave').value = 'yes';
-  document.getElementById('custom-warn').value    = '';
+  document.getElementById('custom-warn').value      = '';
   document.getElementById('custom-error').textContent = '';
 }
 
@@ -277,13 +293,12 @@ function saveCustomEntry() {
   const warn      = document.getElementById('custom-warn').value.trim() || null;
   const errEl     = document.getElementById('custom-error');
 
-  if (!name) { errEl.textContent = 'Please enter a media name.'; return; }
+  if (!name)                  { errEl.textContent = 'Please enter a media name.'; return; }
   if (!gPer1000 || gPer1000 <= 0) { errEl.textContent = 'Please enter a valid g/1000 mL value.'; return; }
 
   const all = getAllMedia();
   if (all.find(m => m.name.toLowerCase() === name.toLowerCase())) {
-    errEl.textContent = 'A media with this name already exists.';
-    return;
+    errEl.textContent = 'A media with this name already exists.'; return;
   }
 
   const entry = { name, type, gPer1000, autoclave, warn, steps: null, custom: true };
@@ -295,23 +310,20 @@ function saveCustomEntry() {
   renderCustomList();
   renderGrid();
 
-  // Show success feedback
   const btn = document.getElementById('custom-save-btn');
+  const orig = btn.textContent;
   btn.textContent = '✓ Saved';
   btn.style.background = '#059669';
-  setTimeout(() => {
-    btn.textContent = 'Save media';
-    btn.style.background = '';
-  }, 1800);
+  setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 1800);
 }
 
 function deleteCustomEntry(name) {
-  if (!confirm(`Remove "${name}" from your custom media?`)) return;
+  if (!confirm('Remove "' + name + '" from your custom media?')) return;
   const updated = loadCustomMedia().filter(m => m.name !== name);
   saveCustomMedia(updated);
   favs = favs.filter(f => f !== name);
   localStorage.setItem('mc_favs', JSON.stringify(favs));
-  if (selectedMedia?.name === name) { selectedMedia = null; hideResult(); }
+  if (selectedMedia && selectedMedia.name === name) { selectedMedia = null; hideResult(); }
   renderCustomList();
   renderGrid();
 }
@@ -320,30 +332,28 @@ function renderCustomList() {
   const el      = document.getElementById('custom-saved-list');
   const customs = loadCustomMedia();
   if (!customs.length) {
-    el.innerHTML = `<div class="empty-state" style="padding:1.5rem 0">
-      <i class="ti ti-database-plus" aria-hidden="true"></i>
-      <p>No custom media yet</p>
-      <small>Add your first one above.</small>
-    </div>`;
+    el.innerHTML = '<div class="empty-state" style="padding:1.5rem 0"><i class="ti ti-database-plus" aria-hidden="true"></i><p>No custom media yet</p><small>Add your first one above.</small></div>';
     return;
   }
-  el.innerHTML = customs.map(m => {
-    const icon = m.autoclave === 'heat-only' ? 'ti-flame' : m.autoclave === 'yes' ? 'ti-virus' : 'ti-leaf';
-    const badge = m.autoclave === 'yes' ? 'Autoclave'
-                : m.autoclave === 'heat-only' ? 'Heat only'
-                : 'No heat';
-    return `<div class="custom-item">
-      <div class="custom-item-icon"><i class="ti ${icon}" aria-hidden="true"></i></div>
-      <div class="custom-item-info">
-        <span class="custom-item-name">${m.name}</span>
-        <span class="custom-item-sub">${m.type} · ${m.gPer1000} g/1000 mL · ${badge}</span>
-      </div>
-      <button class="custom-delete-btn" onclick="deleteCustomEntry(${JSON.stringify(m.name)})"
-        aria-label="Delete ${m.name}" title="Delete">
-        <i class="ti ti-trash" aria-hidden="true"></i>
-      </button>
-    </div>`;
-  }).join('');
+  el.innerHTML = '';
+  customs.forEach(m => {
+    const icon  = m.autoclave === 'heat-only' ? 'ti-flame' : m.autoclave === 'yes' ? 'ti-virus' : 'ti-leaf';
+    const badge = m.autoclave === 'yes' ? 'Autoclave' : m.autoclave === 'heat-only' ? 'Heat only' : 'No heat';
+    const row   = document.createElement('div');
+    row.className = 'custom-item';
+    row.innerHTML = '<div class="custom-item-icon"><i class="ti ' + icon + '" aria-hidden="true"></i></div>'
+      + '<div class="custom-item-info">'
+      + '<span class="custom-item-name">' + escHtml(m.name) + '</span>'
+      + '<span class="custom-item-sub">' + m.type + ' · ' + m.gPer1000 + ' g/1000 mL · ' + badge + '</span>'
+      + '</div>';
+    const delBtn = document.createElement('button');
+    delBtn.className = 'custom-delete-btn';
+    delBtn.setAttribute('aria-label', 'Delete ' + m.name);
+    delBtn.innerHTML = '<i class="ti ti-trash" aria-hidden="true"></i>';
+    delBtn.addEventListener('click', () => deleteCustomEntry(m.name));
+    row.appendChild(delBtn);
+    el.appendChild(row);
+  });
 }
 
 // ── Service Worker ─────────────────────────────────────────────────────────
